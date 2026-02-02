@@ -299,6 +299,59 @@ const questionPools: Record<string, Question[]> = {
       ],
       tags: ["stoichiometry", "molar-mass"],
     },
+    {
+      id: "chem-002",
+      section: "Chemistry",
+      difficulty: "medium",
+      type: "mcq",
+      prompt: "What is the pH of a solution with hydrogen ion concentration [H⁺] = 1×10⁻⁴ M?",
+      choices: ["A) 2", "B) 3", "C) 4", "D) 10"],
+      correctAnswer: "C",
+      solutionOutline: "pH = −log10([H+]) = −log10(1×10⁻⁴) = 4",
+      explanationCorrect: "Use the definition of pH",
+      explanationCommonWrong: [
+        "Using natural log instead of log10",
+        "Dropping the negative sign",
+        "Mistaking 10⁻⁴ for 10⁴"
+      ],
+      tags: ["chemistry", "ph"],
+    },
+  ],
+  "Instrumentation and Controls": [
+    {
+      id: "inst-001",
+      section: "Instrumentation and Controls",
+      difficulty: "easy",
+      type: "mcq",
+      prompt: "A temperature sensor outputs 10 mV/°C. What voltage should it output at 25°C?",
+      choices: ["A) 0.10 V", "B) 0.25 V", "C) 2.5 V", "D) 25 V"],
+      correctAnswer: "B",
+      solutionOutline: "V = (10 mV/°C) × 25°C = 250 mV = 0.25 V",
+      explanationCorrect: "Multiply the sensitivity by temperature",
+      explanationCommonWrong: [
+        "Forgetting to convert mV to V",
+        "Using 10 V/°C instead of 10 mV/°C",
+        "Arithmetic error"
+      ],
+      tags: ["sensors", "calibration"],
+    },
+    {
+      id: "inst-002",
+      section: "Instrumentation and Controls",
+      difficulty: "medium",
+      type: "mcq",
+      prompt: "A first-order system has time constant τ = 5 s. Approximately how long to reach 63.2% of final value?",
+      choices: ["A) 1 s", "B) 5 s", "C) 10 s", "D) 15 s"],
+      correctAnswer: "B",
+      solutionOutline: "First-order response reaches 63.2% at t = τ",
+      explanationCorrect: "Definition of time constant",
+      explanationCommonWrong: [
+        "Using 2τ or 3τ for 63.2%",
+        "Confusing with 95% time",
+        "Unit confusion"
+      ],
+      tags: ["controls", "first-order"],
+    },
   ],
 };
 
@@ -326,24 +379,24 @@ export function generateMockQuestions(
 ): Question[] {
   const questions: Question[] = [];
   
-  // Gather all questions from selected sections
-  const availableQuestions = sections
-    .flatMap((section) => questionPools[section] || [])
-    .filter((q) => {
-      if (!difficulty || difficulty === "mixed") return true;
-      return q.difficulty === difficulty;
-    });
+  const perSectionPools = sections
+    .map((section) => {
+      const pool = (questionPools[section] || []).filter((q) => {
+        if (!difficulty || difficulty === "mixed") return true;
+        return q.difficulty === difficulty;
+      });
+      return { section, pool: shuffleArray(pool) };
+    })
+    .filter((entry) => entry.pool.length > 0);
 
-  if (availableQuestions.length === 0 || count <= 0) {
+  if (perSectionPools.length === 0 || count <= 0) {
     return [];
   }
 
-  const shuffledQuestions = shuffleArray(availableQuestions);
-
-  // Cycle through available questions to fill count
+  // Round-robin across sections to reduce repeats
   for (let i = 0; i < count; i++) {
-    const idx = i % Math.max(shuffledQuestions.length, 1);
-    const baseQuestion = shuffledQuestions[idx];
+    const entry = perSectionPools[i % perSectionPools.length];
+    const baseQuestion = entry.pool[i % entry.pool.length];
     
     // Randomize numeric questions with slight variations
     let question = { 
