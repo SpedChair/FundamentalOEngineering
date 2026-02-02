@@ -15,6 +15,7 @@ export default function QuizPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [showHandbook, setShowHandbook] = useState(true);
 
   useEffect(() => {
     // Load quiz from session storage
@@ -174,6 +175,37 @@ export default function QuizPage() {
         onAnswerChange={handleAnswerChange}
         mode={quiz.mode}
       />
+
+      {/* Handbook Viewer */}
+      <div className="bg-white rounded-lg shadow p-6 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-lg font-semibold text-gray-900">FE Reference Handbook</h3>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowHandbook((prev) => !prev)}
+              className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+            >
+              {showHandbook ? "Hide" : "Show"} Handbook
+            </button>
+            <a
+              href="/reference/fe-handbook-10-5.pdf"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm text-indigo-600 hover:text-indigo-800 underline"
+            >
+              Open in new tab
+            </a>
+          </div>
+        </div>
+
+        {showHandbook && (
+          <iframe
+            title="FE Reference Handbook"
+            src="/reference/fe-handbook-10-5.pdf#view=FitH"
+            className="w-full h-[600px] border rounded-lg"
+          />
+        )}
+      </div>
 
       {/* Error */}
       {error && (

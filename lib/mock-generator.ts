@@ -1,5 +1,7 @@
 import { Question } from "./types";
 
+const DEFAULT_POOL_SIZE = 400;
+
 // Mock question templates per FE section - no API calls needed
 const questionPools: Record<string, Question[]> = {
   "Mathematics": [
@@ -42,6 +44,7 @@ const questionPools: Record<string, Question[]> = {
       section: "Mathematics",
       difficulty: "easy",
       type: "mcq",
+
       prompt: "Evaluate the integral: ∫ 4x dx",
       choices: ["A) 2x² + C", "B) 4x² + C", "C) 2x + C", "D) x² + C"],
       correctAnswer: "A",
@@ -183,57 +186,17 @@ const questionPools: Record<string, Question[]> = {
       tags: ["force-resolution", "components"],
     },
   ],
-  "Dynamics": [
-    {
-      id: "dynamics-001",
-      section: "Dynamics",
-      difficulty: "easy",
-      type: "mcq",
-      prompt: "An object with mass 5 kg experiences a net force of 20 N. What is its acceleration?",
-      choices: ["A) 2 m/s²", "B) 4 m/s²", "C) 100 m/s²", "D) 0.25 m/s²"],
-      correctAnswer: "B",
-      solutionOutline: "F = ma → a = F/m = 20 N / 5 kg = 4 m/s²",
-      explanationCorrect: "Newton's second law: F = ma",
-      explanationCommonWrong: [
-        "Multiplying force and mass instead of dividing",
-        "Unit confusion (kg vs N)",
-        "Wrong formula order"
-      ],
-      tags: ["newtons-laws", "kinematics"],
-    },
-  ],
-  "Strength of Materials": [
-    {
-      id: "som-001",
-      section: "Strength of Materials",
-      difficulty: "medium",
-      type: "numeric",
-      prompt: "A steel rod with cross-sectional area 50 mm² experiences a tensile stress of 200 MPa. Calculate the tensile force.",
-      correctAnswer: 10000,
-      tolerance: 0.05,
-      acceptedUnits: ["N"],
-      solutionOutline: "Stress = Force / Area → F = σ × A = 200 MPa × 50 mm² = 10,000 N",
-      explanationCorrect: "Stress is force per unit area",
-      explanationCommonWrong: [
-        "Dividing stress by area instead of multiplying",
-        "Unit conversion errors (MPa to Pa)",
-        "Using wrong area formula"
-      ],
-      tags: ["stress", "tensile-force"],
-    },
-  ],
-  "Fluid Mechanics": [
-    {
-      id: "fluid-001",
-      section: "Fluid Mechanics",
-      difficulty: "medium",
-      type: "numeric",
-      prompt: "Water flows through a pipe at velocity 2 m/s. If the pipe diameter is 100 mm, calculate the volumetric flow rate.",
-      correctAnswer: 0.0157,
-      tolerance: 0.05,
-      acceptedUnits: ["m³/s"],
-      solutionOutline: "Q = V × A = 2 m/s × π(0.05)² = 2 × 0.00785 ≈ 0.0157 m³/s",
-      explanationCorrect: "Volumetric flow rate is velocity times cross-sectional area",
+        const pool = buildSectionPool(
+          section,
+          DEFAULT_POOL_SIZE,
+          difficulty || "mixed"
+        );
+
+        if (pool.length === 0) return;
+
+        const shuffledPool = shuffleArray(pool);
+        const selected = shuffledPool.slice(0, targetCount);
+        questions.push(...selected);
       explanationCommonWrong: [
         "Using diameter instead of radius in area calculation",
         "Forgetting π in circular area formula",
@@ -880,7 +843,7 @@ export function generateMockQuestions(
   difficulty?: "easy" | "medium" | "hard" | "mixed"
 ): Question[] {
   const questions: Question[] = [];
-  
+
   if (count <= 0 || sections.length === 0) {
     return [];
   }
@@ -894,55 +857,17 @@ export function generateMockQuestions(
 
   sections.forEach((section, sIdx) => {
     const targetCount = sectionCounts[sIdx];
-    const templates = sectionTemplates[section] || [];
+    const pool = buildSectionPool(
+      section,
+      DEFAULT_POOL_SIZE,
+      difficulty || "mixed"
+    );
 
-    for (let i = 0; i < targetCount; i++) {
-      const diff: Difficulty =
-        !difficulty || difficulty === "mixed"
-          ? (i % 3 === 0 ? "easy" : i % 3 === 1 ? "medium" : "hard")
-          : difficulty;
+    if (pool.length === 0) return;
 
-      let question: Question | null = null;
-      if (templates.length > 0) {
-        const template = templates[i % templates.length];
-        question = template(i + sIdx * 1000, diff);
-      } else {
-        const pool = questionPools[section] || [];
-        const base = pool[i % Math.max(pool.length, 1)];
-        if (base) {
-          question = {
-            ...base,
-            id: `${base.id}-${i}-${Date.now()}`,
-            generatedAt: new Date().toISOString(),
-          } as Question;
-        }
-      }
-
-      if (!question) continue;
-    
-    // Randomize numeric questions with slight variations
-      if (question.type === "mcq" && question.choices) {
-        const originalChoices = question.choices.map(normalizeChoiceText);
-        const correctIndex = ["A", "B", "C", "D"].indexOf(question.correctAnswer as string);
-        const correctText = originalChoices[correctIndex];
-
-        const shuffledTexts = shuffleArray(originalChoices);
-        const newCorrectIndex = shuffledTexts.indexOf(correctText);
-        question.choices = shuffledTexts.map(
-          (text, idx) => `${["A", "B", "C", "D"][idx]}) ${text}`
-        );
-        question.correctAnswer = ["A", "B", "C", "D"][newCorrectIndex];
-      }
-
-      if (question.type === "numeric") {
-        const variation = 0.95 + Math.random() * 0.1; // ±5% variation
-        question.correctAnswer = typeof question.correctAnswer === "number" 
-          ? question.correctAnswer * variation 
-          : question.correctAnswer;
-      }
-
-      questions.push(question);
-    }
+    const shuffledPool = shuffleArray(pool);
+    const selected = shuffledPool.slice(0, targetCount);
+    questions.push(...selected);
   });
 
   return questions.slice(0, count);
