@@ -253,6 +253,10 @@ export function generateMockQuestions(
       return q.difficulty === difficulty;
     });
 
+  if (availableQuestions.length === 0 || count <= 0) {
+    return [];
+  }
+
   // Cycle through available questions to fill count
   for (let i = 0; i < count; i++) {
     const idx = i % Math.max(availableQuestions.length, 1);
@@ -261,6 +265,7 @@ export function generateMockQuestions(
     // Randomize numeric questions with slight variations
     let question = { 
       ...baseQuestion,
+      id: `${baseQuestion.id}-${i}-${Date.now()}`,
       generatedAt: new Date().toISOString()
     };
     if (question.type === "numeric") {
