@@ -26,6 +26,8 @@ export default function QuizPage() {
 
     const parsedQuiz: Quiz = JSON.parse(storedQuiz);
     setQuiz(parsedQuiz);
+    setCurrentQuestion(0); // Reset to first question
+    setAnswers(new Map()); // Clear previous answers
 
     // Set timer for exam mode
     if (parsedQuiz.mode === "exam" && parsedQuiz.timeLimit) {
@@ -58,14 +60,18 @@ export default function QuizPage() {
   };
 
   const handleNext = () => {
+    console.log("Next clicked, current:", currentQuestion, "total:", quiz.questions.length);
     if (currentQuestion < quiz.questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
+      console.log("Moving to question:", currentQuestion + 1);
     }
   };
 
   const handlePrevious = () => {
+    console.log("Previous clicked, current:", currentQuestion);
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
+      console.log("Moving to question:", currentQuestion - 1);
     }
   };
 
