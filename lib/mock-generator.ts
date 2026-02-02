@@ -259,7 +259,10 @@ export function generateMockQuestions(
     const baseQuestion = availableQuestions[idx];
     
     // Randomize numeric questions with slight variations
-    let question = { ...baseQuestion };
+    let question = { 
+      ...baseQuestion,
+      generatedAt: new Date().toISOString()
+    };
     if (question.type === "numeric") {
       const variation = 0.95 + Math.random() * 0.1; // ±5% variation
       question.correctAnswer = typeof question.correctAnswer === "number" 
