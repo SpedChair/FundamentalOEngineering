@@ -38,6 +38,40 @@ const questionPools: Record<string, Question[]> = {
       tags: ["calculus", "derivatives"],
     },
     {
+      id: "math-004",
+      section: "Mathematics",
+      difficulty: "easy",
+      type: "mcq",
+      prompt: "Evaluate the integral: ∫ 4x dx",
+      choices: ["A) 2x² + C", "B) 4x² + C", "C) 2x + C", "D) x² + C"],
+      correctAnswer: "A",
+      solutionOutline: "∫ 4x dx = 4 * (x²/2) + C = 2x² + C",
+      explanationCorrect: "Apply the power rule for integration",
+      explanationCommonWrong: [
+        "Forgetting to divide by the new exponent",
+        "Treating the integral like a derivative",
+        "Dropping the constant of integration"
+      ],
+      tags: ["calculus", "integration"],
+    },
+    {
+      id: "math-005",
+      section: "Mathematics",
+      difficulty: "easy",
+      type: "mcq",
+      prompt: "Solve for x: 5x − 15 = 0",
+      choices: ["A) 0", "B) 3", "C) 5", "D) -3"],
+      correctAnswer: "B",
+      solutionOutline: "5x − 15 = 0 → 5x = 15 → x = 3",
+      explanationCorrect: "Isolate x by adding 15, then divide by 5",
+      explanationCommonWrong: [
+        "Sign error when moving terms",
+        "Dividing by the wrong coefficient",
+        "Arithmetic mistake"
+      ],
+      tags: ["linear-equations", "algebra"],
+    },
+    {
       id: "math-003",
       section: "Mathematics",
       difficulty: "hard",
@@ -73,6 +107,40 @@ const questionPools: Record<string, Question[]> = {
         "Not recognizing independence condition"
       ],
       tags: ["probability", "independence"],
+    },
+    {
+      id: "stats-002",
+      section: "Probability and Statistics",
+      difficulty: "easy",
+      type: "mcq",
+      prompt: "A fair die is rolled once. What is the probability of rolling a number greater than 4?",
+      choices: ["A) 1/6", "B) 1/3", "C) 1/2", "D) 2/3"],
+      correctAnswer: "B",
+      solutionOutline: "Outcomes >4 are {5,6} → 2 out of 6 = 1/3",
+      explanationCorrect: "Count favorable outcomes over total outcomes",
+      explanationCommonWrong: [
+        "Counting only one favorable outcome",
+        "Using 4 as a favorable outcome",
+        "Inverting the fraction"
+      ],
+      tags: ["probability", "discrete"],
+    },
+    {
+      id: "stats-003",
+      section: "Probability and Statistics",
+      difficulty: "medium",
+      type: "mcq",
+      prompt: "For a normal distribution, approximately what percentage of data lies within one standard deviation of the mean?",
+      choices: ["A) 50%", "B) 68%", "C) 95%", "D) 99.7%"],
+      correctAnswer: "B",
+      solutionOutline: "Empirical rule: 68-95-99.7",
+      explanationCorrect: "Within 1σ is about 68%",
+      explanationCommonWrong: [
+        "Confusing 1σ with 2σ",
+        "Using the median rule instead of empirical rule",
+        "Mixing up percentages"
+      ],
+      tags: ["statistics", "normal-distribution"],
     },
   ],
   "Engineering Economics": [
@@ -284,8 +352,6 @@ export function generateMockQuestions(
       generatedAt: new Date().toISOString()
     };
 
-    const isVariant = i >= shuffledQuestions.length;
-
     if (question.type === "mcq" && question.choices) {
       const originalChoices = question.choices.map(normalizeChoiceText);
       const correctIndex = ["A", "B", "C", "D"].indexOf(question.correctAnswer as string);
@@ -297,10 +363,6 @@ export function generateMockQuestions(
         (text, idx) => `${["A", "B", "C", "D"][idx]}) ${text}`
       );
       question.correctAnswer = ["A", "B", "C", "D"][newCorrectIndex];
-    }
-
-    if (isVariant) {
-      question.prompt = `${question.prompt} (Variant ${i - shuffledQuestions.length + 1})`;
     }
     if (question.type === "numeric") {
       const variation = 0.95 + Math.random() * 0.1; // ±5% variation
