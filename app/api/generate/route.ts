@@ -5,7 +5,7 @@ import { generateMockQuestions } from "@/lib/mock-generator";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { sections, difficulty, count, typeDistribution, mode } = body;
+    const { sections, difficulty, count, mode } = body;
 
     if (!sections || !Array.isArray(sections) || sections.length === 0) {
       return NextResponse.json(
