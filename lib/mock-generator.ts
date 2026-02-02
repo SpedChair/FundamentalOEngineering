@@ -63,7 +63,7 @@ const questionPools: Record<string, Question[]> = {
       difficulty: "easy",
       type: "mcq",
       prompt: "If P(A) = 0.3 and P(B) = 0.4, and A and B are independent, what is P(A and B)?",
-      choices: ["A) 0.12", "B) 0.7", "C) 0.7", "D) 0.12"],
+      choices: ["A) 0.12", "B) 0.7", "C) 0.4", "D) 0.3"],
       correctAnswer: "A",
       solutionOutline: "For independent events: P(A ∩ B) = P(A) × P(B) = 0.3 × 0.4 = 0.12",
       explanationCorrect: "Independent events multiply their probabilities",
@@ -234,6 +234,19 @@ const questionPools: Record<string, Question[]> = {
   ],
 };
 
+function shuffleArray<T>(items: T[]): T[] {
+  const arr = [...items];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function normalizeChoiceText(choice: string): string {
+  return choice.trim().replace(/^[A-D]\s*[\.)]\s*/, "").trim();
+}
+
 /**
  * Generate deterministic mock questions (no API calls)
  * Useful for free testing and demo purposes
@@ -257,10 +270,12 @@ export function generateMockQuestions(
     return [];
   }
 
+  const shuffledQuestions = shuffleArray(availableQuestions);
+
   // Cycle through available questions to fill count
   for (let i = 0; i < count; i++) {
-    const idx = i % Math.max(availableQuestions.length, 1);
-    const baseQuestion = availableQuestions[idx];
+    const idx = i % Math.max(shuffledQuestions.length, 1);
+    const baseQuestion = shuffledQuestions[idx];
     
     // Randomize numeric questions with slight variations
     let question = { 
@@ -268,6 +283,25 @@ export function generateMockQuestions(
       id: `${baseQuestion.id}-${i}-${Date.now()}`,
       generatedAt: new Date().toISOString()
     };
+
+    const isVariant = i >= shuffledQuestions.length;
+
+    if (question.type === "mcq" && question.choices) {
+      const originalChoices = question.choices.map(normalizeChoiceText);
+      const correctIndex = ["A", "B", "C", "D"].indexOf(question.correctAnswer as string);
+      const correctText = originalChoices[correctIndex];
+
+      const shuffledTexts = shuffleArray(originalChoices);
+      const newCorrectIndex = shuffledTexts.indexOf(correctText);
+      question.choices = shuffledTexts.map(
+        (text, idx) => `${["A", "B", "C", "D"][idx]}) ${text}`
+      );
+      question.correctAnswer = ["A", "B", "C", "D"][newCorrectIndex];
+    }
+
+    if (isVariant) {
+      question.prompt = `${question.prompt} (Variant ${i - shuffledQuestions.length + 1})`;
+    }
     if (question.type === "numeric") {
       const variation = 0.95 + Math.random() * 0.1; // ±5% variation
       question.correctAnswer = typeof question.correctAnswer === "number" 
