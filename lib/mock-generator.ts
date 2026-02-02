@@ -186,17 +186,18 @@ const questionPools: Record<string, Question[]> = {
       tags: ["force-resolution", "components"],
     },
   ],
-        const pool = buildSectionPool(
-          section,
-          DEFAULT_POOL_SIZE,
-          difficulty || "mixed"
-        );
-
-        if (pool.length === 0) return;
-
-        const shuffledPool = shuffleArray(pool);
-        const selected = shuffledPool.slice(0, targetCount);
-        questions.push(...selected);
+  "Fluid Mechanics": [
+    {
+      id: "fluid-001",
+      section: "Fluid Mechanics",
+      difficulty: "medium",
+      type: "numeric",
+      prompt: "Water flows through a pipe at velocity 2 m/s. If the pipe diameter is 100 mm, calculate the volumetric flow rate.",
+      correctAnswer: 0.0157,
+      tolerance: 0.05,
+      acceptedUnits: ["m³/s"],
+      solutionOutline: "Q = V × A = 2 m/s × π(0.05)² = 2 × 0.00785 ≈ 0.0157 m³/s",
+      explanationCorrect: "Volumetric flow rate is velocity times cross-sectional area",
       explanationCommonWrong: [
         "Using diameter instead of radius in area calculation",
         "Forgetting π in circular area formula",
