@@ -404,9 +404,9 @@ const sectionTemplates: Record<string, TemplateFn[]> = {
       const rng = mulberry32(seed);
       const a = Math.floor(rng() * 8) + 2;
       const b = Math.floor(rng() * 12) + 1;
-      const c = Math.floor(rng() * 10) + 1;
-      const x = (c - b) / a;
-      const choices = [x, x + 1, x - 1, x + 2].map((v) => v.toFixed(0));
+      const x = Math.floor(rng() * 11) - 5; // -5 to 5
+      const c = a * x + b;
+      const choices = [x, x + 1, x - 1, x + 2].map((v) => v.toString());
       return createMcqQuestion({
         id: makeId("Mathematics", seed),
         section: "Mathematics",
@@ -414,7 +414,7 @@ const sectionTemplates: Record<string, TemplateFn[]> = {
         prompt: `Solve for x: ${a}x + ${b} = ${c}`,
         choices,
         correctIndex: 0,
-        solutionOutline: `${a}x + ${b} = ${c} → ${a}x = ${c - b} → x = ${(c - b) / a}`,
+        solutionOutline: `${a}x + ${b} = ${c} → ${a}x = ${c - b} → x = ${x}`,
         explanationCorrect: "Isolate x by subtracting and dividing.",
         explanationCommonWrong: [
           "Forgetting to subtract b",
