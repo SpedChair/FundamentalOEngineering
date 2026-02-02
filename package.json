@@ -13,7 +13,12 @@
     "type": "git",
     "url": "git+https://github.com/SpedChair/FundamentalOEngineering.git"
   },
-  "keywords": ["FE", "exam", "practice", "engineering"],
+  "keywords": [
+    "FE",
+    "exam",
+    "practice",
+    "engineering"
+  ],
   "author": "SpedChair",
   "license": "ISC",
   "bugs": {
@@ -21,6 +26,7 @@
   },
   "homepage": "https://github.com/SpedChair/FundamentalOEngineering#readme",
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^25.1.0",
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
