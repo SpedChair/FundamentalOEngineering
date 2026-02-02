@@ -168,6 +168,7 @@ export default function QuizPage() {
 
       {/* Question Card */}
       <QuestionCard
+        key={currentQ.id}
         question={currentQ}
         answer={answers.get(currentQ.id)}
         onAnswerChange={handleAnswerChange}
