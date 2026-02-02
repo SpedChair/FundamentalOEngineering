@@ -834,6 +834,96 @@ function normalizeChoiceText(choice: string): string {
   return choice.trim().replace(/^[A-D]\s*[\.)]\s*/, "").trim();
 }
 
+function buildSectionPool(
+  section: string,
+  poolSize = DEFAULT_POOL_SIZE,
+  difficulty: "easy" | "medium" | "hard" | "mixed" = "mixed"
+): Question[] {
+  const templates = sectionTemplates[section] || [];
+  const basePool = questionPools[section] || [];
+  const pool: Question[] = [];
+
+  const fallbackTemplates: TemplateFn[] = [
+    (seed, diff) =>
+      createMcqQuestion({
+        id: makeId(section, seed),
+        section,
+        difficulty: diff,
+        prompt: `In ${section}, which option best represents a fundamental concept?`,
+        choices: [
+          "Core principle application",
+          "Unrelated topic",
+          "Incorrect unit usage",
+          "Nonstandard assumption",
+        ],
+        correctIndex: 0,
+        solutionOutline: "Identify the option that aligns with the section’s core principle.",
+        explanationCorrect: "The correct option reflects a core principle of the section.",
+        explanationCommonWrong: [
+          "Selecting an unrelated topic",
+          "Using incorrect units",
+          "Relying on nonstandard assumptions",
+        ],
+        tags: [section.toLowerCase().replace(/[^a-z0-9]+/g, "-"), "fundamentals"],
+      }),
+  ];
+
+  const activeTemplates = templates.length > 0 ? templates : fallbackTemplates;
+
+  for (let i = 0; i < poolSize; i++) {
+    const diff: Difficulty =
+      difficulty === "mixed"
+        ? i % 3 === 0
+          ? "easy"
+          : i % 3 === 1
+            ? "medium"
+            : "hard"
+        : difficulty;
+
+    let question: Question | null = null;
+    if (activeTemplates.length > 0) {
+      const template = activeTemplates[i % activeTemplates.length];
+      question = template(i + 1000, diff);
+    } else if (basePool.length > 0) {
+      const base = basePool[i % basePool.length];
+      question = {
+        ...base,
+        id: `${base.id}-${i}-${Date.now()}`,
+        generatedAt: new Date().toISOString(),
+      } as Question;
+    }
+
+    if (!question) continue;
+
+    if (question.type === "mcq" && question.choices) {
+      const originalChoices = question.choices.map(normalizeChoiceText);
+      const correctIndex = ["A", "B", "C", "D"].indexOf(
+        question.correctAnswer as string
+      );
+      const correctText = originalChoices[correctIndex];
+
+      const shuffledTexts = shuffleArray(originalChoices);
+      const newCorrectIndex = shuffledTexts.indexOf(correctText);
+      question.choices = shuffledTexts.map(
+        (text, idx) => `${["A", "B", "C", "D"][idx]}) ${text}`
+      );
+      question.correctAnswer = ["A", "B", "C", "D"][newCorrectIndex];
+    }
+
+    if (question.type === "numeric") {
+      const variation = 0.95 + Math.random() * 0.1; // ±5% variation
+      question.correctAnswer =
+        typeof question.correctAnswer === "number"
+          ? question.correctAnswer * variation
+          : question.correctAnswer;
+    }
+
+    pool.push(question);
+  }
+
+  return pool;
+}
+
 /**
  * Generate deterministic mock questions (no API calls)
  * Useful for free testing and demo purposes
