@@ -77,7 +77,7 @@ fe-exam-platform/
 - Node.js 18+
 - OpenAI API key
 
-### Installation
+### Local Development
 
 1. Clone the repo
 2. Install dependencies:
@@ -97,6 +97,20 @@ fe-exam-platform/
    ```
 
 5. Open [http://localhost:3000](http://localhost:3000)
+
+### Deploy to Vercel (Recommended)
+
+This Next.js app is optimized for Vercel deployment:
+
+1. Go to [vercel.com](https://vercel.com) and sign in with GitHub
+2. Click "New Project" → Import `FundamentalOEngineering` repository
+3. Under "Environment Variables", add:
+   - Key: `OPENAI_API_KEY`
+   - Value: Your OpenAI API key
+4. Click "Deploy"
+5. Your app will be live at `https://<your-project>.vercel.app`
+
+**Automatic updates**: Every push to `master` branch auto-deploys to production.
 
 ## Data Models
 
