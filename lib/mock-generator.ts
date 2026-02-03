@@ -574,6 +574,101 @@ const sectionTemplates: Record<string, TemplateFn[]> = {
         tags: ["differential-equations", "initial-condition"],
       });
     },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const a = Math.floor(rng() * 6) + 3; // semi-major
+      const b = Math.floor(rng() * (a - 1)) + 1; // semi-minor
+      const e = Math.sqrt(1 - (b * b) / (a * a));
+      const choices = [e, e + 0.1, e - 0.1, e + 0.2].map((v) => v.toFixed(2));
+      return createMcqQuestion({
+        id: makeId("Mathematics", seed + 7),
+        section: "Mathematics",
+        difficulty,
+        prompt: `An ellipse has equation x²/${a * a} + y²/${b * b} = 1. What is its eccentricity e?`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: `e = √(1 - b²/a²) = √(1 - ${b * b}/${a * a}) = ${e.toFixed(2)}`,
+        explanationCorrect: "Use the ellipse eccentricity formula. Handbook: Mathematics → Conic Sections. Ctrl+F: eccentricity.",
+        explanationCommonWrong: [
+          "Swapping a and b",
+          "Forgetting the square root",
+          "Arithmetic error"
+        ],
+        tags: ["conic-sections", "ellipse"],
+      });
+    },
+    (seed, difficulty) => {
+      const choices = ["1 + x + x²/2", "1 + x + x³/6", "x + x²/2", "1 + x²/2"]; 
+      return createMcqQuestion({
+        id: makeId("Mathematics", seed + 8),
+        section: "Mathematics",
+        difficulty,
+        prompt: "What are the first three nonzero terms of the Maclaurin series for e^x?",
+        choices,
+        correctIndex: 0,
+        solutionOutline: "e^x = 1 + x + x²/2! + x³/3! + …",
+        explanationCorrect: "Use the Maclaurin series for e^x. Handbook: Mathematics → Series. Ctrl+F: Maclaurin series.",
+        explanationCommonWrong: [
+          "Mixing with sin(x) series",
+          "Skipping the constant term",
+          "Wrong factorial"
+        ],
+        tags: ["series", "maclaurin"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const a = Math.floor(rng() * 6) + 1;
+      const b = Math.floor(rng() * 6) + 1;
+      const c = Math.floor(rng() * 6) + 1;
+      const mag = Math.sqrt(a * a + b * b + c * c);
+      const choices = [
+        `<${(a / mag).toFixed(2)}, ${(b / mag).toFixed(2)}, ${(c / mag).toFixed(2)}>`,
+        `<${(a / mag + 0.1).toFixed(2)}, ${(b / mag).toFixed(2)}, ${(c / mag).toFixed(2)}>`,
+        `<${(a / mag).toFixed(2)}, ${(b / mag + 0.1).toFixed(2)}, ${(c / mag).toFixed(2)}>`,
+        `<${(a / mag).toFixed(2)}, ${(b / mag).toFixed(2)}, ${(c / mag + 0.1).toFixed(2)}>`
+      ];
+      return createMcqQuestion({
+        id: makeId("Mathematics", seed + 9),
+        section: "Mathematics",
+        difficulty,
+        prompt: `Find the unit vector in the direction of v = <${a}, ${b}, ${c}>.`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: "Unit vector = v / |v|",
+        explanationCorrect: "Divide each component by the magnitude. Handbook: Mathematics → Vector Algebra. Ctrl+F: unit vector.",
+        explanationCommonWrong: [
+          "Forgetting to divide all components",
+          "Using magnitude instead of components",
+          "Arithmetic error"
+        ],
+        tags: ["vectors", "unit-vector"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const R = Math.floor(rng() * 6) + 5;
+      const r = Math.floor(rng() * 4) + 2;
+      const h = Math.floor(rng() * 6) + 4;
+      const V = (Math.PI * h * (R * R + R * r + r * r)) / 3;
+      const choices = [V, V + 10, V - 10, V + 20].map((v) => v.toFixed(2));
+      return createMcqQuestion({
+        id: makeId("Mathematics", seed + 10),
+        section: "Mathematics",
+        difficulty,
+        prompt: `Find the volume of a frustum of a cone with R=${R}, r=${r}, h=${h}.`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: "V = (πh/3)(R² + Rr + r²)",
+        explanationCorrect: "Use frustum volume formula. Handbook: Mathematics → Areas & Volumes. Ctrl+F: frustum.",
+        explanationCommonWrong: [
+          "Using cylinder formula",
+          "Forgetting the /3 factor",
+          "Arithmetic error"
+        ],
+        tags: ["mensuration", "volume"],
+      });
+    },
   ],
   "Probability and Statistics": [
     (seed, difficulty) => {
@@ -689,6 +784,72 @@ const sectionTemplates: Record<string, TemplateFn[]> = {
         tags: ["combinations", "counting"],
       });
     },
+    (seed, difficulty) => {
+      const choices = ["Fail to reject", "Reject", "Insufficient data", "Always reject"];
+      return createMcqQuestion({
+        id: makeId("Probability and Statistics", seed + 5),
+        section: "Probability and Statistics",
+        difficulty,
+        prompt: "A z-test yields z = 2.10 at α = 0.05 (two-tailed). What is the correct decision?",
+        choices,
+        correctIndex: 1,
+        solutionOutline: "|z| > 1.96 → reject H₀",
+        explanationCorrect: "Compare test statistic to critical value. Handbook: Probability & Statistics → Hypothesis Testing. Ctrl+F: z-test.",
+        explanationCommonWrong: [
+          "Using one-tailed critical value",
+          "Comparing without absolute value",
+          "Confusing α with p-value"
+        ],
+        tags: ["hypothesis-testing", "z-test"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const R1 = 0.9;
+      const R2 = 0.8;
+      const R3 = 0.95;
+      const series = R1 * R2 * R3;
+      const parallel = 1 - (1 - R1) * (1 - R2);
+      const choices = [series, parallel, R1 + R2 + R3, R1 * R2].map((v) => v.toFixed(3));
+      return createMcqQuestion({
+        id: makeId("Probability and Statistics", seed + 6),
+        section: "Probability and Statistics",
+        difficulty,
+        prompt: "Three components (R1=0.9, R2=0.8, R3=0.95) are in series. What is system reliability?",
+        choices,
+        correctIndex: 0,
+        solutionOutline: "Series reliability = R1·R2·R3",
+        explanationCorrect: "Multiply reliabilities in series. Handbook: Probability & Statistics → Reliability. Ctrl+F: series system.",
+        explanationCommonWrong: [
+          "Adding reliabilities",
+          "Using parallel formula",
+          "Arithmetic error"
+        ],
+        tags: ["reliability", "series"],
+      });
+    },
+    (seed, difficulty) => {
+      const data = [1, 2, 3];
+      const mean = 2;
+      const s2 = ((1 - mean) ** 2 + (2 - mean) ** 2 + (3 - mean) ** 2) / 2; // n-1
+      const choices = [s2, s2 + 0.5, s2 - 0.5, 2].map((v) => v.toFixed(2));
+      return createMcqQuestion({
+        id: makeId("Probability and Statistics", seed + 7),
+        section: "Probability and Statistics",
+        difficulty,
+        prompt: "For data {1,2,3}, what is the sample variance s²?",
+        choices,
+        correctIndex: 0,
+        solutionOutline: "Use n−1 in denominator for sample variance.",
+        explanationCorrect: "Sample variance divides by n−1. Handbook: Probability & Statistics → Descriptive Stats. Ctrl+F: variance.",
+        explanationCommonWrong: [
+          "Using n instead of n−1",
+          "Arithmetic error",
+          "Using standard deviation instead of variance"
+        ],
+        tags: ["variance", "sample"],
+      });
+    },
   ],
   "Chemistry": [
     (seed, difficulty) => {
@@ -800,6 +961,97 @@ const sectionTemplates: Record<string, TemplateFn[]> = {
         tags: ["gas-laws", "ideal-gas"],
       });
     },
+    (seed, difficulty) => {
+      const Ered = 0.34; // Cu2+/Cu
+      const Eox = -0.76; // Zn2+/Zn
+      const Ecell = Ered - Eox;
+      const choices = [Ecell, Ecell - 0.5, Ecell + 0.5, 0.34].map((v) => v.toFixed(2));
+      return createMcqQuestion({
+        id: makeId("Chemistry", seed + 5),
+        section: "Chemistry",
+        difficulty,
+        prompt: "Given E°(Cu²⁺/Cu)=+0.34 V and E°(Zn²⁺/Zn)=−0.76 V, what is E°cell?",
+        choices,
+        correctIndex: 0,
+        solutionOutline: `E°cell = E°cathode − E°anode = 0.34 − (−0.76) = ${Ecell.toFixed(2)} V`,
+        explanationCorrect: "Subtract anode potential. Handbook: Chemistry → Electrochemistry. Ctrl+F: cell potential.",
+        explanationCommonWrong: [
+          "Adding instead of subtracting",
+          "Swapping anode/cathode",
+          "Sign error"
+        ],
+        tags: ["electrochemistry", "cell-potential"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const I = 2; // A
+      const t = 600; // s
+      const F = 96485;
+      const M = 63.55; // Cu
+      const n = 2;
+      const m = (I * t * M) / (n * F);
+      const choices = [m, m + 1, m - 1, m + 2].map((v) => v.toFixed(2));
+      return createMcqQuestion({
+        id: makeId("Chemistry", seed + 6),
+        section: "Chemistry",
+        difficulty,
+        prompt: "Using Faraday’s Law, how many grams of Cu are plated by 2 A for 10 min? (M=63.55, n=2)",
+        choices,
+        correctIndex: 0,
+        solutionOutline: "m = (ItM)/(nF)",
+        explanationCorrect: "Apply Faraday’s law. Handbook: Chemistry → Electrochemistry. Ctrl+F: Faraday’s law.",
+        explanationCommonWrong: [
+          "Using minutes instead of seconds",
+          "Forgetting n",
+          "Arithmetic error"
+        ],
+        tags: ["faraday", "plating"],
+      });
+    },
+    (seed, difficulty) => {
+      const C = 200; // mg/L as CaCO3
+      const meq = C / 50;
+      const choices = [meq, meq + 1, meq - 1, meq + 2].map((v) => v.toFixed(1));
+      return createMcqQuestion({
+        id: makeId("Chemistry", seed + 7),
+        section: "Chemistry",
+        difficulty,
+        prompt: "Convert 200 mg/L as CaCO₃ to meq/L.",
+        choices,
+        correctIndex: 0,
+        solutionOutline: "meq/L = (mg/L) / 50 = 4.0",
+        explanationCorrect: "Use 50 mg/meq for CaCO₃. Handbook: Chemistry → Water Chemistry. Ctrl+F: hardness.",
+        explanationCommonWrong: [
+          "Multiplying instead of dividing",
+          "Using wrong equivalent weight",
+          "Arithmetic error"
+        ],
+        tags: ["water-chemistry", "hardness"],
+      });
+    },
+    (seed, difficulty) => {
+      const y = 0.25;
+      const P = 2.0;
+      const Pi = y * P;
+      const choices = [Pi, Pi + 0.5, Pi - 0.5, P].map((v) => v.toFixed(2));
+      return createMcqQuestion({
+        id: makeId("Chemistry", seed + 8),
+        section: "Chemistry",
+        difficulty,
+        prompt: "A gas mixture has total pressure 2.0 atm with mole fraction of O₂ = 0.25. What is the partial pressure of O₂?",
+        choices,
+        correctIndex: 0,
+        solutionOutline: "P_i = y_i P_total = 0.25 × 2.0 = 0.50 atm",
+        explanationCorrect: "Use Dalton’s law. Handbook: Chemistry → Gas Mixtures. Ctrl+F: partial pressure.",
+        explanationCommonWrong: [
+          "Adding pressures",
+          "Using 1−y instead of y",
+          "Arithmetic error"
+        ],
+        tags: ["gas-mixtures", "dalton"],
+      });
+    },
   ],
   "Instrumentation and Controls": [
     (seed, difficulty) => {
@@ -909,6 +1161,46 @@ const sectionTemplates: Record<string, TemplateFn[]> = {
           "Arithmetic error"
         ],
         tags: ["binary", "digital"],
+      });
+    },
+    (seed, difficulty) => {
+      const zeta = [0.2, 0.5, 1.0, 1.5][seed % 4];
+      const choices = ["Underdamped", "Critically damped", "Overdamped", "Unstable"];
+      const correctIndex = zeta < 1 ? 0 : zeta === 1 ? 1 : 2;
+      return createMcqQuestion({
+        id: makeId("Instrumentation and Controls", seed + 5),
+        section: "Instrumentation and Controls",
+        difficulty,
+        prompt: `A second-order system has damping ratio ζ = ${zeta}. What is the response type?`,
+        choices,
+        correctIndex,
+        solutionOutline: "ζ<1 underdamped, ζ=1 critical, ζ>1 overdamped",
+        explanationCorrect: "Classify based on ζ. Handbook: Instrumentation & Controls → Second-Order Systems. Ctrl+F: damping ratio.",
+        explanationCommonWrong: [
+          "Swapping categories",
+          "Treating ζ=1 as underdamped",
+          "Ignoring ζ definition"
+        ],
+        tags: ["damping", "stability"],
+      });
+    },
+    (seed, difficulty) => {
+      const choices = ["25°C", "50°C", "75°C", "100°C"];
+      return createMcqQuestion({
+        id: makeId("Instrumentation and Controls", seed + 6),
+        section: "Instrumentation and Controls",
+        difficulty,
+        prompt: "Given a Type K thermocouple table snippet: 1.0 mV → 25°C, 2.0 mV → 50°C. Approximate temperature at 1.5 mV.",
+        choices,
+        correctIndex: 1,
+        solutionOutline: "Linear interpolation between table values.",
+        explanationCorrect: "Interpolate from provided table. Handbook: Instrumentation & Controls → Thermocouples. Ctrl+F: Type K table.",
+        explanationCommonWrong: [
+          "Picking nearest value",
+          "Using wrong table scale",
+          "Arithmetic error"
+        ],
+        tags: ["thermocouple", "tables"],
       });
     },
   ],
