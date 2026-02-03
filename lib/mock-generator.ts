@@ -95,23 +95,6 @@ const questionPools: Record<string, Question[]> = {
   ],
   "Probability and Statistics": [
     {
-      id: "stats-001",
-      section: "Probability and Statistics",
-      difficulty: "easy",
-      type: "mcq",
-      prompt: "If P(A) = 0.3 and P(B) = 0.4, and A and B are independent, what is P(A and B)?",
-      choices: ["A) 0.12", "B) 0.7", "C) 0.4", "D) 0.3"],
-      correctAnswer: "A",
-      solutionOutline: "For independent events: P(A ∩ B) = P(A) × P(B) = 0.3 × 0.4 = 0.12",
-      explanationCorrect: "Independent events multiply their probabilities",
-      explanationCommonWrong: [
-        "Adding probabilities instead of multiplying",
-        "Confusing with union (or) instead of intersection (and)",
-        "Not recognizing independence condition"
-      ],
-      tags: ["probability", "independence"],
-    },
-    {
       id: "stats-002",
       section: "Probability and Statistics",
       difficulty: "easy",
