@@ -446,6 +446,134 @@ const sectionTemplates: Record<string, TemplateFn[]> = {
         tags: ["calculus", "derivatives"],
       });
     },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const h = Math.floor(rng() * 6) + 2;
+      const k = Math.floor(rng() * 6) - 3;
+      const r = Math.floor(rng() * 6) + 1;
+      const choices = [r, r + 1, r - 1, r + 2].map((v) => v.toString());
+      return createMcqQuestion({
+        id: makeId("Mathematics", seed + 2),
+        section: "Mathematics",
+        difficulty,
+        prompt: `A circle has equation x² + y² - ${2 * h}x - ${2 * k}y + ${h * h + k * k - r * r} = 0. What is its radius?`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: `Complete the square to get (x-${h})² + (y-${k})² = ${r * r}. Radius = ${r}.`,
+        explanationCorrect: "Complete the square to identify center and radius. Handbook: Mathematics → Analytic Geometry. Ctrl+F: circle equation.",
+        explanationCommonWrong: [
+          "Using h or k as the radius",
+          "Sign error when completing the square",
+          "Arithmetic mistake"
+        ],
+        tags: ["analytic-geometry", "circles"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const a = Math.floor(rng() * 6) + 1;
+      const b = Math.floor(rng() * 6) + 1;
+      const c = Math.floor(rng() * 6) + 1;
+      const mag = Math.sqrt(a * a + b * b + c * c);
+      const choices = [mag, mag + 1, mag - 1, mag + 2].map((v) => v.toFixed(2));
+      return createMcqQuestion({
+        id: makeId("Mathematics", seed + 3),
+        section: "Mathematics",
+        difficulty,
+        prompt: `Find the magnitude of vector v = <${a}, ${b}, ${c}>.`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: `|v| = √(${a}²+${b}²+${c}²) = ${mag.toFixed(2)}`,
+        explanationCorrect: "Use the 3D vector magnitude formula. Handbook: Mathematics → Vector Algebra. Ctrl+F: vector magnitude.",
+        explanationCommonWrong: [
+          "Adding components without squaring",
+          "Forgetting the square root",
+          "Arithmetic error"
+        ],
+        tags: ["vectors", "magnitude"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const a = Math.floor(rng() * 4) + 1;
+      const b = Math.floor(rng() * 4) + 1;
+      const c = Math.floor(rng() * 4) + 1;
+      const d = Math.floor(rng() * 4) + 1;
+      const e = Math.floor(rng() * 4) + 1;
+      const f = Math.floor(rng() * 4) + 1;
+      const m11 = a * d + b * f;
+      const m12 = a * e + b * f;
+      const m21 = c * d + d * f;
+      const m22 = c * e + d * f;
+      const choices = [
+        `[${m11}, ${m12}; ${m21}, ${m22}]`,
+        `[${m11 + 1}, ${m12}; ${m21}, ${m22}]`,
+        `[${m11}, ${m12 + 1}; ${m21}, ${m22}]`,
+        `[${m11}, ${m12}; ${m21 + 1}, ${m22}]`,
+      ];
+      return createMcqQuestion({
+        id: makeId("Mathematics", seed + 4),
+        section: "Mathematics",
+        difficulty,
+        prompt: `Given A = [[${a}, ${b}], [${c}, ${d}]] and B = [[${d}, ${e}], [${f}, ${f}]], compute A×B.`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: "Multiply rows by columns.",
+        explanationCorrect: "Matrix multiplication is row-by-column. Handbook: Mathematics → Linear Algebra. Ctrl+F: matrix multiplication.",
+        explanationCommonWrong: [
+          "Adding matrices instead of multiplying",
+          "Mixing row/column order",
+          "Arithmetic error"
+        ],
+        tags: ["linear-algebra", "matrix-multiplication"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const x0 = Math.floor(rng() * 4) + 1;
+      const x1 = x0 - (x0 * x0 - 2) / (2 * x0); // Newton for sqrt(2)
+      const x2 = x1 - (x1 * x1 - 2) / (2 * x1);
+      const choices = [x2, x2 + 0.1, x2 - 0.1, x2 + 0.2].map((v) => v.toFixed(3));
+      return createMcqQuestion({
+        id: makeId("Mathematics", seed + 5),
+        section: "Mathematics",
+        difficulty,
+        prompt: `Use Newton’s method for f(x)=x²−2 with x₀=${x0}. What is x₂ (second iteration) to three decimals?`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: `x_{n+1}=x_n−f(x_n)/f'(x_n). Compute x₁ then x₂.`,
+        explanationCorrect: "Apply Newton’s method twice. Handbook: Mathematics → Numerical Methods. Ctrl+F: Newton's method.",
+        explanationCommonWrong: [
+          "Using x₀ as final",
+          "Wrong derivative",
+          "Arithmetic error"
+        ],
+        tags: ["numerical-methods", "newton-raphson"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const c = Math.floor(rng() * 4) + 1;
+      const y0 = Math.floor(rng() * 6) + 1;
+      const C = y0 - c;
+      const choices = [C, C + 1, C - 1, C + 2].map((v) => v.toString());
+      return createMcqQuestion({
+        id: makeId("Mathematics", seed + 6),
+        section: "Mathematics",
+        difficulty,
+        prompt: `Solve dy/dx = ${c} with y(0) = ${y0}. What is the constant C in y = ${c}x + C?`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: `y = ${c}x + C, y(0) = ${y0} → C = ${C}`,
+        explanationCorrect: "Use the initial condition to find C. Handbook: Mathematics → Differential Equations. Ctrl+F: initial condition.",
+        explanationCommonWrong: [
+          "Using x instead of 0",
+          "Sign error",
+          "Arithmetic mistake"
+        ],
+        tags: ["differential-equations", "initial-condition"],
+      });
+    },
   ],
   "Probability and Statistics": [
     (seed, difficulty) => {
@@ -488,6 +616,77 @@ const sectionTemplates: Record<string, TemplateFn[]> = {
           "Guessing without the rule"
         ],
         tags: ["statistics", "normal-distribution"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const n = 20;
+      const p = 0.1;
+      const k = 2;
+      const comb = 190; // C(20,2)
+      const prob = comb * Math.pow(p, k) * Math.pow(1 - p, n - k);
+      const choices = [prob, prob + 0.05, prob - 0.05, prob + 0.1].map((v) => v.toFixed(3));
+      return createMcqQuestion({
+        id: makeId("Probability and Statistics", seed + 2),
+        section: "Probability and Statistics",
+        difficulty,
+        prompt: "If 10% of parts are defective, what is the probability that exactly 2 in a sample of 20 are defective?",
+        choices,
+        correctIndex: 0,
+        solutionOutline: "Use binomial: C(n,k)p^k(1-p)^{n-k}",
+        explanationCorrect: "Apply the binomial distribution. Handbook: Probability & Statistics → Binomial. Ctrl+F: binomial distribution.",
+        explanationCommonWrong: [
+          "Using p instead of p^k",
+          "Forgetting combination term",
+          "Arithmetic error"
+        ],
+        tags: ["binomial", "discrete"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const z1 = 1.0;
+      const z2 = 2.0;
+      const area = 0.1359; // approx P(1<Z<2)
+      const choices = [area, area + 0.05, area - 0.05, 0.3413].map((v) => v.toFixed(4));
+      return createMcqQuestion({
+        id: makeId("Probability and Statistics", seed + 3),
+        section: "Probability and Statistics",
+        difficulty,
+        prompt: `For a standard normal variable Z, approximate P(${z1} < Z < ${z2}).`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: "Use Z-table: P(1<Z<2)=Φ(2)-Φ(1)",
+        explanationCorrect: "Subtract cumulative probabilities from the Z-table. Handbook: Probability & Statistics → Normal Distribution. Ctrl+F: Z table.",
+        explanationCommonWrong: [
+          "Using Φ(2) only",
+          "Subtracting in wrong order",
+          "Using two-tailed value"
+        ],
+        tags: ["normal-distribution", "z-table"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const n = 10;
+      const r = 4;
+      const comb = 210; // C(10,4)
+      const choices = [comb, 200, 120, 240].map((v) => v.toString());
+      return createMcqQuestion({
+        id: makeId("Probability and Statistics", seed + 4),
+        section: "Probability and Statistics",
+        difficulty,
+        prompt: `How many ways can a ${r}-person committee be chosen from ${n} engineers?`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: `C(${n},${r}) = ${comb}`,
+        explanationCorrect: "Use combinations for unordered selections. Handbook: Probability & Statistics → Combinations. Ctrl+F: nCr.",
+        explanationCommonWrong: [
+          "Using permutations",
+          "Arithmetic error",
+          "Using nPr instead of nCr"
+        ],
+        tags: ["combinations", "counting"],
       });
     },
   ],
@@ -535,6 +734,72 @@ const sectionTemplates: Record<string, TemplateFn[]> = {
         tags: ["chemistry", "ph"],
       });
     },
+    (seed, difficulty) => {
+      const choices = ["+6", "+3", "+2", "0"];
+      return createMcqQuestion({
+        id: makeId("Chemistry", seed + 2),
+        section: "Chemistry",
+        difficulty,
+        prompt: "What is the oxidation state of Cr in K₂Cr₂O₇?",
+        choices,
+        correctIndex: 0,
+        solutionOutline: "K = +1, O = −2. Solve for Cr in neutral compound.",
+        explanationCorrect: "Oxidation state of Cr is +6. Handbook: Chemistry → Oxidation Numbers. Ctrl+F: oxidation state.",
+        explanationCommonWrong: [
+          "Using average of K or O only",
+          "Sign error",
+          "Arithmetic error"
+        ],
+        tags: ["redox", "oxidation"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const m1 = 10 + Math.floor(rng() * 10);
+      const m2 = 5 + Math.floor(rng() * 10);
+      const choices = ["Reactant A", "Reactant B", "Neither", "Both"];
+      return createMcqQuestion({
+        id: makeId("Chemistry", seed + 3),
+        section: "Chemistry",
+        difficulty,
+        prompt: `A reaction requires 2 mol A per 1 mol B. If you have ${m1} mol A and ${m2} mol B, which is limiting?`,
+        choices,
+        correctIndex: m1 / 2 < m2 ? 0 : 1,
+        solutionOutline: "Compare available moles to stoichiometric ratio.",
+        explanationCorrect: "Limiting reactant is the one that runs out first. Handbook: Chemistry → Stoichiometry. Ctrl+F: limiting reactant.",
+        explanationCommonWrong: [
+          "Comparing moles directly",
+          "Ignoring stoichiometric ratio",
+          "Arithmetic error"
+        ],
+        tags: ["stoichiometry", "limiting-reactant"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const P = 1; // atm
+      const V = 2 + (seed % 4); // L
+      const n = 0.5 + (seed % 3) * 0.5; // mol
+      const R = 0.0821;
+      const T = (P * V) / (n * R);
+      const choices = [T, T + 10, T - 10, T + 20].map((v) => v.toFixed(1));
+      return createMcqQuestion({
+        id: makeId("Chemistry", seed + 4),
+        section: "Chemistry",
+        difficulty,
+        prompt: `Using PV = nRT, find T (K) for P=${P} atm, V=${V} L, n=${n} mol (R=0.0821).`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: `T = PV/(nR) = ${T.toFixed(1)} K`,
+        explanationCorrect: "Apply the ideal gas law. Handbook: Chemistry → Gas Laws. Ctrl+F: PV=nRT.",
+        explanationCommonWrong: [
+          "Multiplying instead of dividing",
+          "Unit inconsistency",
+          "Arithmetic error"
+        ],
+        tags: ["gas-laws", "ideal-gas"],
+      });
+    },
   ],
   "Instrumentation and Controls": [
     (seed, difficulty) => {
@@ -576,6 +841,74 @@ const sectionTemplates: Record<string, TemplateFn[]> = {
           "Unit confusion"
         ],
         tags: ["controls", "first-order"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const bits = 8 + (seed % 5); // 8-12 bits
+      const vref = 5;
+      const res = vref / Math.pow(2, bits);
+      const choices = [res, res * 2, res / 2, vref].map((v) => v.toFixed(4));
+      return createMcqQuestion({
+        id: makeId("Instrumentation and Controls", seed + 2),
+        section: "Instrumentation and Controls",
+        difficulty,
+        prompt: `What is the voltage resolution of a ${bits}-bit ADC with a ${vref} V range?`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: `Resolution = Vref / 2^N = ${res.toFixed(4)} V`,
+        explanationCorrect: "ADC resolution uses 2^N levels. Handbook: Instrumentation & Controls → Data Acquisition. Ctrl+F: ADC resolution.",
+        explanationCommonWrong: [
+          "Using 2N instead of 2^N",
+          "Forgetting units",
+          "Arithmetic error"
+        ],
+        tags: ["adc", "resolution"],
+      });
+    },
+    (seed, difficulty) => {
+      const rng = mulberry32(seed);
+      const vin = 1 + (seed % 5);
+      const r1 = 1 + (seed % 4);
+      const r2 = 2 + (seed % 4);
+      const vout = -(r2 / r1) * vin;
+      const choices = [vout, -vin, vin, vout + 1].map((v) => v.toFixed(1));
+      return createMcqQuestion({
+        id: makeId("Instrumentation and Controls", seed + 3),
+        section: "Instrumentation and Controls",
+        difficulty,
+        prompt: `An inverting op-amp has R1=${r1} kΩ and R2=${r2} kΩ with Vin=${vin} V. What is Vout?`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: `Vout = -(R2/R1)Vin = ${vout.toFixed(1)} V`,
+        explanationCorrect: "Use inverting amplifier gain. Handbook: Instrumentation & Controls → Op-Amps. Ctrl+F: inverting amplifier.",
+        explanationCommonWrong: [
+          "Missing the negative sign",
+          "Swapping R1 and R2",
+          "Arithmetic error"
+        ],
+        tags: ["op-amp", "gain"],
+      });
+    },
+    (seed, difficulty) => {
+      const dec = 13 + (seed % 8);
+      const bin = dec.toString(2);
+      const choices = [bin, (dec + 1).toString(2), (dec - 1).toString(2), (dec + 2).toString(2)];
+      return createMcqQuestion({
+        id: makeId("Instrumentation and Controls", seed + 4),
+        section: "Instrumentation and Controls",
+        difficulty,
+        prompt: `Convert decimal ${dec} to binary.`,
+        choices,
+        correctIndex: 0,
+        solutionOutline: `Binary representation of ${dec} is ${bin}`,
+        explanationCorrect: "Convert by repeated division by 2. Handbook: Instrumentation & Controls → Digital Systems. Ctrl+F: binary.",
+        explanationCommonWrong: [
+          "Bit order reversed",
+          "Off-by-one error",
+          "Arithmetic error"
+        ],
+        tags: ["binary", "digital"],
       });
     },
   ],
